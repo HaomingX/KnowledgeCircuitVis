@@ -4,10 +4,14 @@ from streamlit_react_flow import react_flow
 import re
 import os
 
+# Set up language identification
 langid.set_languages(['en', 'zh'])
 lang_dic = {'zh': 'en', 'en': 'zh'}
 
 def set_page_config():
+    """
+    Configure the Streamlit page settings.
+    """
     st.set_page_config(
         page_title='Knowledge Circuit',
         page_icon=':shark:',
@@ -20,6 +24,9 @@ def set_page_config():
     )
 
 def get_gv_files(circuit_dir):
+    """
+    Retrieve all .gv files from the specified directory.
+    """
     gv_files = []
     for subdir in os.listdir(circuit_dir):
         subdir_path = os.path.join(circuit_dir, subdir)
@@ -31,6 +38,9 @@ def get_gv_files(circuit_dir):
     return gv_files
 
 def gv_to_edges(gv_file):
+    """
+    Parse a .gv file and extract edges.
+    """
     edges = []
     edge_pattern = re.compile(r'\"<(.+?)>\" -> \"<(.+?)>\"')
     
@@ -50,6 +60,9 @@ def gv_to_edges(gv_file):
     return edges
 
 def get_layer(node):
+    """
+    Determine the layer of a node based on its name.
+    """
     if node.startswith('m'):
         return int(node[1:].split('-')[0])
     elif node.startswith('a'):
@@ -58,11 +71,17 @@ def get_layer(node):
         return 100 # For nodes like 'resid_post'
 
 def get_attention_head(node):
+    """
+    Extract the attention head number from a node name.
+    """
     if node.startswith('a'):
         return int(node.split('.')[-1])
     return -1
 
 def create_elements(edges, graph_width, graph_height):
+    """
+    Create elements for the React Flow graph based on the edges.
+    """
     nodes = set()
     for source, target in edges:
         nodes.add(source)
@@ -150,10 +169,14 @@ node_types = {
 }
 
 def main():
+    """
+    Main function to run the our app.
+    """
     set_page_config()
 
     st.sidebar.title("Knowledge Circuit Analysis")
 
+    # Choose analysis method
     analysis_method = st.sidebar.radio(
         "Choose analysis method",
         ("Select from existing cases", "Upload your own file")
@@ -195,6 +218,7 @@ def main():
     print(gv_file_path)
     edges = gv_to_edges(gv_file_path)
 
+    # Set graph dimensions
     graph_width = 1500 - 100
     graph_height = 1000 - 200
 
@@ -202,6 +226,7 @@ def main():
 
     flowStyles = {'height': f'{graph_height}px', 'width': f'{graph_width}px'}
 
+    # Render the React Flow graph
     react_flow('transformer', elements=elements, flow_styles=flowStyles)
 
 if __name__ == "__main__":
