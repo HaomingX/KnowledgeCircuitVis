@@ -162,7 +162,7 @@ def main():
     if analysis_method == "Select from existing cases":
         selected_formatted_name = st.sidebar.radio(
             'Select LLM Model',
-            list(['gpt2-medium', 'tinygpt'])
+            list(['gpt2-medium'])
         )
 
         circuit_dir = selected_formatted_name
